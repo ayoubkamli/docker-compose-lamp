@@ -1,0 +1,45 @@
+When you install php* packages from Debian, you install a second copy of PHP (or at least some of its modules), and not the version you're intending to use from this image. Everyone who has been doing so, has possibly not been using the php from this container (and instead the using the one they install from Debian). In that case, they would be better off using FROM debian:stretch. #542 was to prevent the situation since the installed packages from Debian are not guaranteed to work with the php in the image.
+
+Take for example installing phpunit which pulls in a second copy of php with php5-cli:
+
+$ docker run -it --rm php:5.6 bash
+root@b50160ab1c68:/# rm /etc/apt/preferences.d/no-debian-php
+root@b50160ab1c68:/# apt-get update
+...
+root@b50160ab1c68:/# apt-get install phpunit
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  javascript-common libjs-bootstrap libjs-jquery libjs-jquery-metadata
+  libjs-jquery-tablesorter libjs-twitter-bootstrap libjson-c2 libonig2
+  libperl4-corelibs-perl libqdbm14 lsof pear-channels php-codecoverage
+  php-doctrine-instantiator php-file-iterator php-pear php-symfony-yaml
+  php-text-template php-timer php-token-stream php5-cli php5-common php5-json
+  php5-readline phpunit-comparator phpunit-diff phpunit-environment phpunit-exporter
+  phpunit-mock-object phpunit-version psmisc ucf
+Suggested packages:
+  libjs-twitter-bootstrap-docs php5-xdebug php5-dev php5-user-cache phpunit-dbunit
+  phpunit-selenium phpunit-story php-phpunit-php-invoker
+The following NEW packages will be installed:
+  javascript-common libjs-bootstrap libjs-jquery libjs-jquery-metadata
+  libjs-jquery-tablesorter libjs-twitter-bootstrap libjson-c2 libonig2
+  libperl4-corelibs-perl libqdbm14 lsof pear-channels php-codecoverage
+  php-doctrine-instantiator php-file-iterator php-pear php-symfony-yaml
+  php-text-template php-timer php-token-stream php5-cli php5-common php5-json
+  php5-readline phpunit phpunit-comparator phpunit-diff phpunit-environment
+  phpunit-exporter phpunit-mock-object phpunit-version psmisc ucf
+0 upgraded, 33 newly installed, 0 to remove and 1 not upgraded.
+Need to get 4825 kB of archives.
+After this operation, 20.7 MB of additional disk space will be used.
+Do you want to continue? [Y/n] 
+...
+root@b50160ab1c68:/# php -v
+PHP 5.6.32 (cli) (built: Dec 19 2017 00:54:21) 
+Copyright (c) 1997-2016 The PHP Group
+Zend Engine v2.6.0, Copyright (c) 1998-2016 Zend Technologies
+root@b50160ab1c68:/# php5 -v
+PHP 5.6.30-0+deb8u1 (cli) (built: Feb  8 2017 08:50:21) 
+Copyright (c) 1997-2016 The PHP Group
+Zend Engine v2.6.0, Copyright (c) 1998-2016 Zend Technologies
+    with Zend OPcache v7.0.6-dev, Copyright (c) 1999-2016, by Zend Technologies
